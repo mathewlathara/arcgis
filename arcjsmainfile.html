@@ -1,0 +1,298 @@
+<html>
+
+<head>
+    <title>The main Arg gis project</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 18px;
+            background-color: #CCC;
+        }
+
+        .float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #0C9;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            box-shadow: 2px 2px 3px #999;
+        }
+
+        .my-float {
+            margin-top: 22px;
+        }
+
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            padding-top: 100px;
+            /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+
+        /* The Close Button */
+        .close {
+            color: black;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            padding: 2px 16px;
+            background-color: white;
+            color: black;
+        }
+
+        .modal-body {
+            padding: 2px 16px;
+        }
+
+        .modal-footer {
+            padding: 2px 16px;
+            background-color: white;
+            color: black;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.23/"></script>
+    <script type="text/javascript" src="jsonfile.js"></script>
+    <script>
+
+        const points = []
+        // points[0] = [-118.80657463861, 34.0005930608889]
+        // points[1] = [-118.80657463861, 33.0005930608889]
+        var loadobject = object1[0];
+        require([
+            "esri/config",
+            "esri/Map",
+            "esri/views/MapView",
+
+            "esri/Graphic",
+            "esri/layers/GraphicsLayer"
+
+        ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer) {
+
+            esriConfig.apiKey = "AAPKfb2205b571aa464b8280e4e744e3bde7rK2eQbS-fVv05DUtFVJUqBVoJjMIQGIMHK7rqQR-In8y-qSZSmNtobECX3jGCzGG";
+
+            const map = new Map({
+                basemap: "arcgis-topographic" //Basemap layer service
+            });
+
+            const view = new MapView({
+                map: map,
+                center: [-78.8911306275, 43.9299554612], //Longitude, latitude
+                zoom: 13,
+                container: "viewDiv"
+            });
+
+            const graphicsLayer = new GraphicsLayer();
+            map.add(graphicsLayer);
+
+            const simpleMarkerSymbol = {
+                type: "simple-marker",
+                color: [226, 119, 40],  // Orange
+                outline: {
+                    color: [255, 255, 255], // White
+                    width: 1
+                }
+            };
+
+            var totalobjectlength = Object.keys(loadobject.STATION).length;
+            for (let i = 0; i < totalobjectlength; i++) {
+                // console.log("Latitude---->  " + loadobject.Latitude[i] + "   Longitude------>  " + loadobject.Longitude[i]);
+                const point = { //Create a point
+                    type: "point",
+                    longitude: loadobject.Longitude[i],
+                    latitude: loadobject.Latitude[i]
+                };
+                const popupTemplate = {
+                    title: "{Name}",
+                    content: "{Description}"
+                }
+                const attributes = {
+                    Name: "Demographics",
+                    Description: "<ul><li>Chloride: " + loadobject.Chloride[i] + "</li><li>Total Phosphorus: " + loadobject.TotalPhosphorus[i] + "</li><li>Total Rain (mm) -1day Total: " + loadobject.totalrain[i] + "</li><li>Latitude: " + loadobject.Latitude[i] + "</li><li>Longitude: " + loadobject.Longitude[i] + "</li></ul>"
+                }
+                const pointGraphic = new Graphic({
+                    geometry: point,
+                    symbol: simpleMarkerSymbol,
+                    attributes: attributes,
+                    popupTemplate: popupTemplate
+                });
+                graphicsLayer.add(pointGraphic);
+            }
+
+        });
+    </script>
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+        integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h3>Filter</h3>
+            </div>
+            <div class="modal-body">
+                <label>Enter the amount of Phosphorus:</label> <input type="text" id="phosphorousinput">
+                <label>Enter the filter:</label> <select id="phosphorousfiltertype">
+                    <option value="1">></option><option value="2"><</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="button" id="searchPhosphorous">Search</button>
+            </div>
+        </div>
+
+    </div>
+    <a href="#" class="float" id="myBtn">
+        <i class="fas fa-search my-float"></i>
+    </a>
+
+    <script>
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        var searchbutton = document.getElementById("searchPhosphorous");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal 
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        searchbutton.onclick = function () {
+            // window.location.href = "arcjssearchfilter.html";
+            var phosphorousinput = document.getElementById("phosphorousinput").value;
+            var phosphrousfiltertype = document.getElementById("phosphorousfiltertype").value;
+            if (phosphorousinput !== "") {
+                localStorage.setItem("phosphorousamount", phosphorousinput);
+                localStorage.setItem("phosphrousfiltertype", phosphrousfiltertype);
+                window.open("arcjssearchfilter.html", '_blank').focus();
+            } else {
+                alert("The search input cannot be empty");
+            }
+        }
+    </script>
+</body>
+
+</html>

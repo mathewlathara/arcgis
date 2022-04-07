@@ -1,0 +1,132 @@
+<html>
+
+<head>
+    <title>Search page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.23/"></script>
+    <script type="text/javascript" src="jsonfile.js"></script>
+    <script>
+        var phosphorousamount = localStorage.getItem("phosphorousamount");
+        var phosphrousfiltertype = localStorage.getItem("phosphrousfiltertype");
+        var phosphrousfiltertypestring = "";
+        if (phosphrousfiltertype == 1) {
+            phosphrousfiltertypestring = ">";
+        } else {
+            phosphrousfiltertypestring = "<";
+        }
+        alert("All the location having phosphorous amount" + " " + phosphrousfiltertypestring + " " + phosphorousamount + " is displayed in this page");
+        const points = []
+        // points[0] = [-118.80657463861, 34.0005930608889]
+        // points[1] = [-118.80657463861, 33.0005930608889]
+        var loadobject = object1[0];
+        require([
+            "esri/config",
+            "esri/Map",
+            "esri/views/MapView",
+
+            "esri/Graphic",
+            "esri/layers/GraphicsLayer"
+
+        ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer) {
+
+            esriConfig.apiKey = "AAPKfb2205b571aa464b8280e4e744e3bde7rK2eQbS-fVv05DUtFVJUqBVoJjMIQGIMHK7rqQR-In8y-qSZSmNtobECX3jGCzGG";
+
+            const map = new Map({
+                basemap: "arcgis-topographic" //Basemap layer service
+            });
+
+            const view = new MapView({
+                map: map,
+                center: [-78.8911306275, 43.9299554612], //Longitude, latitude
+                zoom: 13,
+                container: "viewDiv"
+            });
+
+            const graphicsLayer = new GraphicsLayer();
+            map.add(graphicsLayer);
+
+            const simpleMarkerSymbol = {
+                type: "simple-marker",
+                color: [226, 119, 40],  // Orange
+                outline: {
+                    color: [255, 255, 255], // White
+                    width: 1
+                }
+            };
+
+            var totalobjectlength = Object.keys(loadobject.STATION).length;
+            for (let i = 0; i < totalobjectlength; i++) {
+                // console.log("Latitude---->  " + loadobject.Latitude[i] + "   Longitude------>  " + loadobject.Longitude[i]);
+                if (phosphrousfiltertype == 1) {
+                    if (loadobject.TotalPhosphorus[i] > phosphorousamount) {
+                        const point = { //Create a point
+                            type: "point",
+                            longitude: loadobject.Longitude[i],
+                            latitude: loadobject.Latitude[i]
+                        };
+                        const popupTemplate = {
+                            title: "{Name}",
+                            content: "{Description}"
+                        }
+                        const attributes = {
+                            Name: "Demographics",
+                            Description: "<ul><li>Chloride: " + loadobject.Chloride[i] + "</li><li>Total Phosphorus: " + loadobject.TotalPhosphorus[i] + "</li><li>Total Rain (mm) -1day Total: " + loadobject.totalrain[i] + "</li><li>Latitude: " + loadobject.Latitude[i] + "</li><li>Longitude: " + loadobject.Longitude[i] + "</li></ul>"
+                        }
+                        const pointGraphic = new Graphic({
+                            geometry: point,
+                            symbol: simpleMarkerSymbol,
+                            attributes: attributes,
+                            popupTemplate: popupTemplate
+                        });
+                        graphicsLayer.add(pointGraphic);
+                    }
+                } else {
+                    if (loadobject.TotalPhosphorus[i] < phosphorousamount) {
+                        const point = { //Create a point
+                            type: "point",
+                            longitude: loadobject.Longitude[i],
+                            latitude: loadobject.Latitude[i]
+                        };
+                        const popupTemplate = {
+                            title: "{Name}",
+                            content: "{Description}"
+                        }
+                        const attributes = {
+                            Name: "Demographics",
+                            Description: "<ul><li>Chloride: " + loadobject.Chloride[i] + "</li><li>Total Phosphorus: " + loadobject.TotalPhosphorus[i] + "</li><li>Total Rain (mm) -1day Total: " + loadobject.totalrain[i] + "</li><li>Latitude: " + loadobject.Latitude[i] + "</li><li>Longitude: " + loadobject.Longitude[i] + "</li></ul>"
+                        }
+                        const pointGraphic = new Graphic({
+                            geometry: point,
+                            symbol: simpleMarkerSymbol,
+                            attributes: attributes,
+                            popupTemplate: popupTemplate
+                        });
+                        graphicsLayer.add(pointGraphic);
+                    }
+                }
+            }
+
+        });
+    </script>
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+        integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>
