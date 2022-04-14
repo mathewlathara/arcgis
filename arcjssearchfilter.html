@@ -13,6 +13,40 @@
             height: 100%;
             width: 100%;
         }
+
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            }
+
+            .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+            }
+
+            .sidenav a:hover {
+            color: #f1f1f1;
+            }
+
+            .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            }
     </style>
     <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
     <script src="https://js.arcgis.com/4.23/"></script>
@@ -76,9 +110,16 @@
                             longitude: loadobject.Longitude[i],
                             latitude: loadobject.Latitude[i]
                         };
+
+                        const additionalDetials = {
+                            title: "Show details",
+                            id: "detail-this",
+                            image: "add-details.png" // this section is for adding additional details button
+                        };
                         const popupTemplate = {
                             title: "{Name}",
-                            content: "{Description}"
+                            content: "{Description}",
+                            actions: [additionalDetials]
                         }
                         const attributes = {
                             Name: "Demographics",
@@ -91,6 +132,16 @@
                             popupTemplate: popupTemplate
                         });
                         graphicsLayer.add(pointGraphic);
+                        function openNav() {
+                            document.getElementById("mySidenav").style.width = "400px";
+                        }
+
+                        view.popup.on("trigger-action", (event) => {
+                        // Execute the measureThis() function if the measure-this action is clicked
+                            if (event.action.id === "detail-this") {
+                                openNav();
+                            }
+                        });
                     }
                 } else {
                     if (loadobject.TotalPhosphorus[i] < phosphorousamount) {
@@ -99,9 +150,15 @@
                             longitude: loadobject.Longitude[i],
                             latitude: loadobject.Latitude[i]
                         };
+                        const additionalDetials = {
+                            title: "Show details",
+                            id: "detail-this",
+                            image: "add-details.png" // this section is for adding additional details button
+                        };
                         const popupTemplate = {
                             title: "{Name}",
-                            content: "{Description}"
+                            content: "{Description}",
+                            actions: [additionalDetials]
                         }
                         const attributes = {
                             Name: "Demographics",
@@ -114,6 +171,16 @@
                             popupTemplate: popupTemplate
                         });
                         graphicsLayer.add(pointGraphic);
+                        function openNav() {
+                            document.getElementById("mySidenav").style.width = "400px";
+                        }
+
+                        view.popup.on("trigger-action", (event) => {
+                        // Execute the measureThis() function if the measure-this action is clicked
+                            if (event.action.id === "detail-this") {
+                                openNav();
+                            }
+                        });
                     }
                 }
             }
@@ -127,6 +194,19 @@
 
 <body>
     <div id="viewDiv"></div>
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div style="text-align: center;">
+            <img src= "regionmap.jpg" alt="Graph image" width="300" height="500"> 
+        </div>
+        <div>&nbsp;</div>
+        <div style="text-align: center;"><p style="color:white; font-size: 12px;">Shows all the comparative map parameters and its demographics</p></div>
+    </div>
+    <script>
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
 </body>
 
 </html>
